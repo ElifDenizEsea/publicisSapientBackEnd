@@ -33,12 +33,16 @@ public class DefaultCardService implements CardService {
         card.setBalance(0L);
         card.setName(cardRequest.getName());
         card.setCardLimit(cardRequest.getLimit());
+        card.setNumber(cardRequest.getNumber());
         if (!CardNumberValidator.checkLength(cardRequest.getNumber())) {
             throw new InvalidCardNumberException(CARD_NUMBER_INVALID_LENGTH);
         } else if (!CardNumberValidator.checkDigits(cardRequest.getNumber())) {
             throw new InvalidCardNumberException(CARD_NUMBER_INVALID_DIGITS);
         } else if (!CardNumberValidator.checkLuhn(cardRequest.getNumber())) {
             throw new InvalidCardNumberException(CARD_NUMBER_INVALID_LUHN);
+        }
+        if(cardRepository.findFirstByCardNumber(cardRequest.getNumber()).isPresent()){
+            throw new InvalidCardNumberException(CARD_NUMBER_EXIST);
         }
         cardRepository.save(card);
 
